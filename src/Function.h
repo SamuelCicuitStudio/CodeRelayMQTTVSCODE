@@ -1,34 +1,69 @@
 #include "VarDef.h"
-void startAPMode();
-void connectToWiFi();
-void handleSaveNewPassword();
-void handleRebootRequest();
-void handleSaveSettings();
-void saveSettings();
-void saveSettings();
-void loadSettings();
-void handleRoot();
-bool mountSPIFFS();
-void createConfigFile();
-String prepareSensorData();
-void writeFile(fs::FS &fs, const char *path, const char *message);
-String readFile(fs::FS &fs, const char *path) ;
-void publishSensorConfig(uint8_t i, String name, String path, String type, const char* unit, const char* value_template,
-                         String identifiers, String manufacturer, String model, String sw_version, String hw_version,
-                         String configuration_url);
-void subscribeTopic(String topic);
-void publishTopics(String topic, String data);
+// Functions related to Wi-Fi and access point management
+void startAPMode(); // Starts the ESP32 in Access Point (AP) mode for configuration.
+void connectToWiFi(); // Connects the ESP32 to a specified Wi-Fi network.
 
-bool reconnect() ;
-bool checkConnection();
-void sendCommand(uint8_t id, uint8_t cmd);
-uint16_t CRC(uint8_t* bytes, uint8_t len);
-void publishSwitchConfig(uint8_t i, const String& name, const String& path, const String& identifiers, 
-                         const String& manufacturer, const String& model, const String& sw_version, 
+// Functions for handling configuration settings
+void handleSaveNewPassword(); // Handles saving a new password configuration.
+void handleRebootRequest(); // Handles requests to reboot the ESP32 device.
+void handleSaveSettings(); // Handles saving all current settings.
+void saveSettings(); // Saves current settings to non-volatile storage.
+void loadSettings(); // Loads previously saved settings from non-volatile storage.
+
+// Functions for web server handling
+void handleRoot(); // Handles requests to the root URL of the web server.
+
+// Functions for SPIFFS (SPI Flash File System) management
+bool mountSPIFFS(); // Mounts the SPIFFS file system on the ESP32.
+void createConfigFile(); // Creates a configuration file in SPIFFS.
+
+// Functions for sensor data management
+String prepareSensorData(); // Prepares sensor data for publishing or storage.
+
+// Functions for file system operations
+void writeFile(fs::FS &fs, const char *path, const char *message); // Writes data to a file in the file system.
+String readFile(fs::FS &fs, const char *path); // Reads data from a file in the file system.
+
+// Functions for MQTT (Message Queuing Telemetry Transport) communication
+void publishSensorConfig(uint8_t i, String name, String path, String type, const char* unit,
+                         const char* value_template, String identifiers, String manufacturer,
+                         String model, String sw_version, String hw_version, String configuration_url);
+// Publishes sensor configuration data to MQTT.
+void subscribeTopic(String topic); // Subscribes to an MQTT topic.
+void publishTopics(String topic, String data); // Publishes data to an MQTT topic.
+
+bool reconnect(); // Reconnects to the MQTT broker.
+bool checkConnection(); // Checks the MQTT connection status.
+void sendCommand(uint8_t id, uint8_t cmd); // Sends a command over MQTT.
+uint16_t CRC(uint8_t* bytes, uint8_t len); // Calculates CRC (Cyclic Redundancy Check) for data integrity.
+
+// Functions for publishing switch configuration to MQTT
+void publishSwitchConfig(uint8_t i, const String& name, const String& path, const String& identifiers,
+                         const String& manufacturer, const String& model, const String& sw_version,
                          const String& hw_version, const String& configuration_url);
 
-void subscribeToAllTopics();
-String getchipID();// get the chip id of the es32
+void subscribeToAllTopics(); // Subscribes to all predefined MQTT topics.
+
+// Utility function
+String getchipID(); // Retrieves the chip ID of the ESP32.
+void SetPinRelayBoard();// Set pin directions
+/***************************************************************************************************************************************************************************************/
+void SetPinRelayBoard() {
+    // Set relay pins as output
+    pinMode(RL1, OUTPUT);
+    pinMode(RL2, OUTPUT);
+    pinMode(RL3, OUTPUT);
+    pinMode(RL4, OUTPUT);
+
+    // Set button pin as input
+    pinMode(BUTTON_PIN, INPUT);
+
+    // Set RS485 control pins
+    pinMode(RE, OUTPUT);    // RE (Receiver Enable) as output
+    pinMode(DE, OUTPUT);    // DE (Driver Enable) as output
+    pinMode(RXD1, INPUT);   // RXD1 as input for receiving data
+    pinMode(TXD1, OUTPUT);  // TXD1 as output for transmitting data
+}
 /***************************************************************************************************************************************************************************************/
 uint16_t CRC(uint8_t* bytes, uint8_t len) {
     uint16_t crc = 0xFFFF;
